@@ -29,13 +29,7 @@ export class MistralOcr implements INodeType {
 				required: true,
 			},
 		],
-		requestDefaults: {
-			baseURL: 'https://api.mistral.ai',
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-			},
-		},
+
 		properties: [
 			{
 				displayName: 'Input Data Field Name',
@@ -125,7 +119,7 @@ export class MistralOcr implements INodeType {
 					'mistralApi',
 					{
 						method: 'POST',
-						url: '/v1/files',
+						url: 'https://api.mistral.ai/v1/files',
 						body: formData,
 						headers: {
 							...formData.getHeaders(),
@@ -145,7 +139,7 @@ export class MistralOcr implements INodeType {
 					'mistralApi',
 					{
 						method: 'GET',
-						url: `/v1/files/${uploadResponse.id}/url`,
+						url: `https://api.mistral.ai/v1/files/${uploadResponse.id}/url`,
 						qs: {
 							expiry: options.expiryHours || 24,
 						},
@@ -178,7 +172,7 @@ export class MistralOcr implements INodeType {
 					'mistralApi',
 					{
 						method: 'POST',
-						url: '/v1/ocr',
+						url: 'https://api.mistral.ai/v1/ocr',
 						body: ocrRequestBody,
 						headers: {
 							'Content-Type': 'application/json',
