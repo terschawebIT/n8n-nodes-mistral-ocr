@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-mistral-ocr",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"description": "n8n node for Mistral OCR API integration with structured annotations",
 	"keywords": [
 		"n8n-community-node-package",
@@ -37,11 +37,17 @@
 		"check:fix": "biome check --apply .",
 		"prepublishOnly": "npm run build && npm run check"
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,
-		"credentials": ["dist/credentials/MistralApi.credentials.js"],
-		"nodes": ["dist/nodes/MistralOcr/MistralOcr.node.js"]
+		"credentials": [
+			"dist/credentials/MistralApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/MistralOcr/MistralOcr.node.js"
+		]
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.6.0",
