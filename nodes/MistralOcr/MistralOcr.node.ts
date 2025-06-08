@@ -19,7 +19,12 @@ import type {
 	NodeExecutionMetadata,
 } from './types';
 import { NODE_PROPERTIES } from './utils/nodeProperties';
-import { buildJsonSchema, parseCustomFieldsJson, parsePages } from './utils/schemaUtils';
+import {
+	buildCustomFieldsFromCollection,
+	buildJsonSchema,
+	parseCustomFieldsJson,
+	parsePages,
+} from './utils/schemaUtils';
 
 export class MistralOcr implements INodeType {
 	description: INodeTypeDescription = {
@@ -164,9 +169,10 @@ export class MistralOcr implements INodeType {
 					} else {
 						// Use template-based or custom field approach
 						if (documentTemplate === 'custom') {
-							const customFieldsJson = this.getNodeParameter('customFieldsJson', i, '{}') as string;
+							const customFields = this.getNodeParameter('customFields', i, { field: [] }) as any;
+							const quickFields = this.getNodeParameter('quickFields', i, []) as string[];
 							try {
-								documentSchema = parseCustomFieldsJson(customFieldsJson);
+								documentSchema = buildCustomFieldsFromCollection(customFields, quickFields);
 							} catch (error: any) {
 								throw new NodeOperationError(this.getNode(), error.message, { itemIndex: i });
 							}

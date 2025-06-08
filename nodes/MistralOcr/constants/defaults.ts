@@ -30,7 +30,7 @@ export const DEFAULT_BBOX_SCHEMA: CustomFieldSchema = {
 export const MISTRAL_API_ENDPOINTS = {
 	UPLOAD: 'https://api.mistral.ai/v1/files',
 	GET_URL: (fileId: string) => `https://api.mistral.ai/v1/files/${fileId}/url`,
-	OCR: 'https://api.mistral.ai/v1/chat/completions',
+	OCR: 'https://api.mistral.ai/v1/ocr',
 } as const;
 
 export const LIMITS = {

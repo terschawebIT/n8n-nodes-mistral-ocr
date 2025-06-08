@@ -100,26 +100,199 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 		description: 'Choose a pre-configured template or define custom fields',
 	},
 
-	// Custom Fields as JSON for simplicity
+	// Custom Fields as User-Friendly Collection
 	{
 		displayName: 'Custom Fields',
-		name: 'customFieldsJson',
-		type: 'json',
+		name: 'customFields',
+		type: 'fixedCollection',
 		displayOptions: {
 			show: {
 				operation: ['ocrWithAnnotations'],
 				documentTemplate: ['custom'],
 			},
 		},
-		default: JSON.stringify(DEFAULT_CUSTOM_FIELDS, null, 2),
+		typeOptions: {
+			multipleValues: true,
+		},
+		default: {
+			field: [
+				{
+					fieldName: 'total_amount',
+					fieldType: 'number',
+					description: 'Total amount including all taxes and fees',
+					required: true,
+				},
+				{
+					fieldName: 'document_date',
+					fieldType: 'string',
+					description: 'Date when the document was created',
+					required: true,
+				},
+			],
+		},
+		options: [
+			{
+				name: 'field',
+				displayName: 'Field',
+				values: [
+					{
+						displayName: 'Field Name',
+						name: 'fieldName',
+						type: 'string',
+						default: '',
+						required: true,
+						description: 'Name of the field to extract (e.g., total_amount, customer_name)',
+						placeholder: 'field_name',
+					},
+					{
+						displayName: 'Field Type',
+						name: 'fieldType',
+						type: 'options',
+						default: 'string',
+						options: [
+							{
+								name: 'Text (String)',
+								value: 'string',
+								description: 'Text content like names, addresses, references',
+							},
+							{
+								name: 'Number',
+								value: 'number',
+								description: 'Numeric values like amounts, quantities, IDs',
+							},
+							{
+								name: 'Date',
+								value: 'string',
+								description: 'Date values (stored as string)',
+							},
+							{
+								name: 'List (Array)',
+								value: 'array',
+								description: 'Multiple items like authors, keywords, items',
+							},
+							{
+								name: 'Yes/No (Boolean)',
+								value: 'boolean',
+								description: 'True/false values',
+							},
+						],
+						description: 'The type of data this field contains',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: '',
+						required: true,
+						description:
+							'Describe what this field should contain to help the AI extract it correctly',
+						placeholder: 'What information should be extracted for this field?',
+					},
+					{
+						displayName: 'Required',
+						name: 'required',
+						type: 'boolean',
+						default: true,
+						description: 'Whether this field must be found in the document',
+					},
+				],
+			},
+		],
 		description:
-			'Define the fields you want to extract as JSON schema. Common fields: total_amount (number), customer_number (string), document_date (string), sender (string), recipient (string), reference (string)',
-		placeholder: `{
-  "field_name": {
-    "type": "string",
-    "description": "What this field contains"
-  }
-}`,
+			'Define the fields you want to extract from the document. Add as many fields as you need.',
+	},
+
+	// Quick Field Templates
+	{
+		displayName: 'Quick Add Common Fields',
+		name: 'quickFields',
+		type: 'multiOptions',
+		displayOptions: {
+			show: {
+				operation: ['ocrWithAnnotations'],
+				documentTemplate: ['custom'],
+			},
+		},
+		default: [],
+		options: [
+			{
+				name: '💰 Total Amount (Gesamtbetrag)',
+				value: 'total_amount',
+				description: 'Total amount including taxes',
+			},
+			{
+				name: '💳 Net Amount (Nettobetrag)',
+				value: 'net_amount',
+				description: 'Amount before taxes',
+			},
+			{
+				name: '🏷️ Tax Amount (Steuerbetrag)',
+				value: 'tax_amount',
+				description: 'Tax amount',
+			},
+			{
+				name: '👤 Customer Number (Kundennummer)',
+				value: 'customer_number',
+				description: 'Customer or client ID',
+			},
+			{
+				name: '📄 Document Number (Belegnummer)',
+				value: 'document_number',
+				description: 'Invoice, receipt, or document number',
+			},
+			{
+				name: '📅 Document Date (Dokumentendatum)',
+				value: 'document_date',
+				description: 'Date of the document',
+			},
+			{
+				name: '⏰ Due Date (Fälligkeitsdatum)',
+				value: 'due_date',
+				description: 'Payment due date',
+			},
+			{
+				name: '📧 Sender (Absender)',
+				value: 'sender',
+				description: 'Name and address of sender',
+			},
+			{
+				name: '📨 Recipient (Empfänger)',
+				value: 'recipient',
+				description: 'Name and address of recipient',
+			},
+			{
+				name: '📋 Reference (Aktenzeichen)',
+				value: 'reference',
+				description: 'File number or reference',
+			},
+			{
+				name: '🏪 Company Name (Firmenname)',
+				value: 'company_name',
+				description: 'Name of the company',
+			},
+			{
+				name: '📍 Address (Adresse)',
+				value: 'address',
+				description: 'Street address',
+			},
+			{
+				name: '💳 Payment Method (Zahlungsart)',
+				value: 'payment_method',
+				description: 'How payment was made',
+			},
+			{
+				name: '📞 Phone Number (Telefonnummer)',
+				value: 'phone_number',
+				description: 'Contact phone number',
+			},
+			{
+				name: '✉️ Email Address (E-Mail)',
+				value: 'email',
+				description: 'Email address',
+			},
+		],
+		description:
+			'Quickly add common fields to your custom field list above. Select the fields you need and they will be automatically added.',
 	},
 
 	// Include Element Analysis

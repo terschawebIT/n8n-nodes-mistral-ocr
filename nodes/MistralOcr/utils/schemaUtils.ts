@@ -14,6 +14,65 @@ export function parseCustomFieldsJson(customFieldsJson: string): CustomFieldSche
 }
 
 /**
+ * Build custom fields schema from UI collection
+ */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Complex logic needed for processing multiple field types and configurations
+export function buildCustomFieldsFromCollection(
+	customFields: any,
+	quickFields: string[] = [],
+): CustomFieldSchema {
+	const schema: CustomFieldSchema = {};
+
+	// Process fields from the collection
+	if (customFields?.field && Array.isArray(customFields.field)) {
+		for (const field of customFields.field) {
+			if (field.fieldName && field.fieldType && field.description) {
+				schema[field.fieldName] = {
+					type: field.fieldType === 'array' ? 'array' : field.fieldType,
+					description: field.description,
+				};
+
+				// Add items property for arrays
+				if (field.fieldType === 'array') {
+					schema[field.fieldName].items = { type: 'string' };
+				}
+			}
+		}
+	}
+
+	// Add quick fields with default configurations
+	const quickFieldDefinitions: Record<
+		string,
+		{ type: 'string' | 'number' | 'boolean' | 'array'; description: string }
+	> = {
+		total_amount: { type: 'number', description: 'Total amount including all taxes and fees' },
+		net_amount: { type: 'number', description: 'Net amount before taxes' },
+		tax_amount: { type: 'number', description: 'Tax amount' },
+		customer_number: { type: 'string', description: 'Customer or client identification number' },
+		document_number: { type: 'string', description: 'Invoice, receipt, or document number' },
+		document_date: { type: 'string', description: 'Date when the document was created' },
+		due_date: { type: 'string', description: 'Payment due date' },
+		sender: { type: 'string', description: 'Name and address of the sender' },
+		recipient: { type: 'string', description: 'Name and address of the recipient' },
+		reference: { type: 'string', description: 'File number, case reference or subject line' },
+		company_name: { type: 'string', description: 'Name of the company' },
+		address: { type: 'string', description: 'Street address' },
+		payment_method: { type: 'string', description: 'How the payment was made' },
+		phone_number: { type: 'string', description: 'Contact phone number' },
+		email: { type: 'string', description: 'Email address' },
+	};
+
+	// Add quick fields that aren't already defined
+	for (const quickField of quickFields) {
+		if (quickFieldDefinitions[quickField] && !schema[quickField]) {
+			schema[quickField] = quickFieldDefinitions[quickField];
+		}
+	}
+
+	return schema;
+}
+
+/**
  * Convert schema object to Mistral API format
  */
 export function buildJsonSchema(schemaObj: CustomFieldSchema, schemaName: string): any {
