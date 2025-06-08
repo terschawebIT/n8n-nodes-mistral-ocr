@@ -4,14 +4,14 @@
 	"description": "n8n node for Mistral OCR API integration",
 	"keywords": ["n8n-community-node-package", "mistral", "ocr", "document-processing", "ai"],
 	"license": "MIT",
-	"homepage": "https://github.com/niko-terschawetz/n8n-nodes-mistral-ocr",
+	"homepage": "https://github.com/terschawebIT/n8n-nodes-mistral-ocr",
 	"author": {
 		"name": "Niko Terschawetz",
-		"email": "niko.terschawetz@example.com"
+		"email": "nt@terschaweb.de"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/niko-terschawetz/n8n-nodes-mistral-ocr.git"
+		"url": "git+https://github.com/terschawebIT/n8n-nodes-mistral-ocr.git"
 	},
 	"engines": {
 		"node": ">=20.10.0"
