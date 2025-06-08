@@ -1,8 +1,8 @@
 {
 	"name": "n8n-nodes-mistral-ocr",
-	"version": "0.1.1",
-	"description": "n8n node for Mistral OCR API integration",
-	"keywords": ["n8n-community-node-package", "mistral", "ocr", "document-processing", "ai"],
+	"version": "0.2.0",
+	"description": "n8n node for Mistral OCR API integration with structured annotations",
+	"keywords": ["n8n-community-node-package", "mistral", "ocr", "document-processing", "ai", "annotations", "structured-data"],
 	"license": "MIT",
 	"homepage": "https://github.com/terschawebIT/n8n-nodes-mistral-ocr",
 	"author": {
