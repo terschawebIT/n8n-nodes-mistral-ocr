@@ -430,7 +430,8 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 						displayName: 'Description',
 						name: 'description',
 						type: 'string',
-						default: 'Early payment discount percentage as decimal (e.g. "Skonto 2%", "2,0% discount"). Extract decimal value, return null if not found.',
+						default:
+							'Early payment discount percentage as decimal (e.g. "Skonto 2%", "2,0% discount"). Extract decimal value, return null if not found.',
 						displayOptions: {
 							show: {
 								fieldName: ['skontoPercent'],
@@ -443,7 +444,8 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 						displayName: 'Description',
 						name: 'description',
 						type: 'string',
-						default: 'Gross amount from lines like "Bruttobetrag", "Gesamt", "Total" or net + tax. Return as decimal with dot separator, null if not found.',
+						default:
+							'Gross amount from lines like "Bruttobetrag", "Gesamt", "Total" or net + tax. Return as decimal with dot separator, null if not found.',
 						displayOptions: {
 							show: {
 								fieldName: ['amountWithoutSkonto'],
@@ -456,7 +458,8 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 						displayName: 'Description',
 						name: 'description',
 						type: 'string',
-						default: 'Amount with early payment discount applied (explicit "Zahlbetrag" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found.',
+						default:
+							'Amount with early payment discount applied (explicit "Zahlbetrag" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found.',
 						displayOptions: {
 							show: {
 								fieldName: ['amountWithSkonto'],
@@ -495,7 +498,8 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 						displayName: 'Description',
 						name: 'description',
 						type: 'string',
-						default: 'Title or brief summary of the document content (e.g. "Invoice for IT Services", "Contract for Office Rental")',
+						default:
+							'Title or brief summary of the document content (e.g. "Invoice for IT Services", "Contract for Office Rental")',
 						displayOptions: {
 							show: {
 								fieldName: ['document_title'],
@@ -508,7 +512,8 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 						displayName: 'Description',
 						name: 'description',
 						type: 'string',
-						default: 'Date when the document was created in DD.MM.YYYY format, return null if not found',
+						default:
+							'Date when the document was created in DD.MM.YYYY format, return null if not found',
 						displayOptions: {
 							show: {
 								fieldName: ['document_date'],
@@ -534,7 +539,8 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 						displayName: 'Description',
 						name: 'description',
 						type: 'string',
-						default: 'Early payment discount due date in DD.MM.YYYY format, return null if not found',
+						default:
+							'Early payment discount due date in DD.MM.YYYY format, return null if not found',
 						displayOptions: {
 							show: {
 								fieldName: ['dueDateSkonto'],
