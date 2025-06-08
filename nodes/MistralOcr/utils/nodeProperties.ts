@@ -128,6 +128,11 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 						required: true,
 						options: [
 							{
+								name: '🔧 Custom Field Name',
+								value: '__custom__',
+								description: 'Enter a custom field name - no auto-fill',
+							},
+							{
 								name: '💰 Total Amount (total_amount)',
 								value: 'total_amount',
 								description: 'Total amount including all taxes and fees',
@@ -243,11 +248,6 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 								value: 'email',
 								description: 'Email address',
 							},
-							{
-								name: '🔧 Custom Field Name',
-								value: '__custom__',
-								description: 'Enter a custom field name',
-							},
 						],
 						description: 'Select a common field or choose "Custom" to enter your own field name',
 					},
@@ -296,7 +296,7 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 							},
 							{
 								name: 'Date',
-								value: 'string',
+								value: 'date',
 								description: 'Date values (stored as string)',
 							},
 							{
@@ -355,7 +355,7 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 							},
 							{
 								name: 'Date',
-								value: 'string',
+								value: 'date',
 								description: 'Date values (stored as string)',
 							},
 							{
