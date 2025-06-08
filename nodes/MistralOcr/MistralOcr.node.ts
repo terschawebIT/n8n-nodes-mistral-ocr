@@ -46,7 +46,8 @@ export class MistralOcr implements INodeType {
 					{
 						name: 'OCR with Annotations',
 						value: 'ocrWithAnnotations',
-						description: 'Extract text with structured data annotations (BBox and/or Document level)',
+						description:
+							'Extract text with structured data annotations (BBox and/or Document level)',
 					},
 				],
 				description: 'Type of OCR operation to perform',
@@ -110,22 +111,28 @@ export class MistralOcr implements INodeType {
 						annotationTypes: ['bbox'],
 					},
 				},
-				default: JSON.stringify({
-					image_type: {
-						type: 'string',
-						description: 'The type of the image/element'
+				default: JSON.stringify(
+					{
+						image_type: {
+							type: 'string',
+							description: 'The type of the image/element',
+						},
+						short_description: {
+							type: 'string',
+							description: 'A brief description of the element',
+						},
+						summary: {
+							type: 'string',
+							description: 'Detailed summary of the element',
+						},
 					},
-					short_description: {
-						type: 'string',
-						description: 'A brief description of the element'
-					},
-					summary: {
-						type: 'string',
-						description: 'Detailed summary of the element'
-					}
-				}, null, 2),
-				description: 'JSON Schema defining the structure for BBox annotations. Each property can have "type" and "description" fields.',
-				placeholder: '{\n  "property_name": {\n    "type": "string",\n    "description": "Description for the annotation"\n  }\n}',
+					null,
+					2,
+				),
+				description:
+					'JSON Schema defining the structure for BBox annotations. Each property can have "type" and "description" fields.',
+				placeholder:
+					'{\n  "property_name": {\n    "type": "string",\n    "description": "Description for the annotation"\n  }\n}',
 			},
 
 			// Document Annotation Schema
@@ -139,23 +146,29 @@ export class MistralOcr implements INodeType {
 						annotationTypes: ['document'],
 					},
 				},
-				default: JSON.stringify({
-					language: {
-						type: 'string',
-						description: 'The primary language of the document'
+				default: JSON.stringify(
+					{
+						language: {
+							type: 'string',
+							description: 'The primary language of the document',
+						},
+						document_type: {
+							type: 'string',
+							description: 'The type/category of the document',
+						},
+						key_topics: {
+							type: 'array',
+							items: { type: 'string' },
+							description: 'Main topics covered in the document',
+						},
 					},
-					document_type: {
-						type: 'string',
-						description: 'The type/category of the document'
-					},
-					key_topics: {
-						type: 'array',
-						items: { type: 'string' },
-						description: 'Main topics covered in the document'
-					}
-				}, null, 2),
-				description: 'JSON Schema defining the structure for Document annotations. Each property can have "type", "description", and for arrays "items" fields.',
-				placeholder: '{\n  "property_name": {\n    "type": "string",\n    "description": "Description for the annotation"\n  }\n}',
+					null,
+					2,
+				),
+				description:
+					'JSON Schema defining the structure for Document annotations. Each property can have "type", "description", and for arrays "items" fields.',
+				placeholder:
+					'{\n  "property_name": {\n    "type": "string",\n    "description": "Description for the annotation"\n  }\n}',
 			},
 
 			// Pages parameter for Document Annotations
@@ -170,7 +183,8 @@ export class MistralOcr implements INodeType {
 					},
 				},
 				default: '0-7',
-				description: 'Pages to process for Document Annotations (e.g., "0-7" or "0,1,2,3"). Max 8 pages for Document Annotations.',
+				description:
+					'Pages to process for Document Annotations (e.g., "0-7" or "0,1,2,3"). Max 8 pages for Document Annotations.',
 				placeholder: '0-7 or 0,1,2,3',
 			},
 
@@ -213,9 +227,10 @@ export class MistralOcr implements INodeType {
 			const configObj = config as any;
 			properties[key] = {
 				type: configObj.type,
-				title: key.split('_').map((word: string) =>
-					word.charAt(0).toUpperCase() + word.slice(1)
-				).join('_'),
+				title: key
+					.split('_')
+					.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+					.join('_'),
 			};
 
 			if (configObj.description) {
@@ -257,9 +272,13 @@ export class MistralOcr implements INodeType {
 		}
 
 		// Handle comma-separated format like "0,1,2,3"
-		return pagesStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+		return pagesStr
+			.split(',')
+			.map((s) => Number.parseInt(s.trim()))
+			.filter((n) => !Number.isNaN(n));
 	}
 
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Legacy method needs refactoring in future version
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
@@ -350,12 +369,15 @@ export class MistralOcr implements INodeType {
 				if (operation === 'ocrWithAnnotations') {
 					const annotationTypes = this.getNodeParameter('annotationTypes', i) as string[];
 
-										// Add BBox annotations
+					// Add BBox annotations
 					if (annotationTypes.includes('bbox')) {
 						const bboxSchemaStr = this.getNodeParameter('bboxAnnotationSchema', i) as string;
 						try {
 							const bboxSchema = JSON.parse(bboxSchemaStr);
-							ocrRequestBody.bbox_annotation_format = MistralOcr.buildJsonSchema(bboxSchema, 'BBoxAnnotation');
+							ocrRequestBody.bbox_annotation_format = MistralOcr.buildJsonSchema(
+								bboxSchema,
+								'BBoxAnnotation',
+							);
 						} catch (error: any) {
 							throw new NodeOperationError(
 								this.getNode(),
@@ -367,12 +389,18 @@ export class MistralOcr implements INodeType {
 
 					// Add Document annotations
 					if (annotationTypes.includes('document')) {
-						const documentSchemaStr = this.getNodeParameter('documentAnnotationSchema', i) as string;
+						const documentSchemaStr = this.getNodeParameter(
+							'documentAnnotationSchema',
+							i,
+						) as string;
 						const pagesStr = this.getNodeParameter('pages', i, '0-7') as string;
 
 						try {
 							const documentSchema = JSON.parse(documentSchemaStr);
-							ocrRequestBody.document_annotation_format = MistralOcr.buildJsonSchema(documentSchema, 'DocumentAnnotation');
+							ocrRequestBody.document_annotation_format = MistralOcr.buildJsonSchema(
+								documentSchema,
+								'DocumentAnnotation',
+							);
 
 							// Add pages parameter
 							const pages = MistralOcr.parsePages(pagesStr);
