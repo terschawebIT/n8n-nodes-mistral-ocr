@@ -265,16 +265,22 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 						description: 'Enter your custom field name',
 						placeholder: 'my_custom_field',
 					},
-					// Smart Field Type with dynamic defaults
+					// Smart Field Type for amount fields (auto-selects Number)
 					{
 						displayName: 'Field Type',
 						name: 'fieldType',
 						type: 'options',
-						default:
-							'={{ ["total_amount", "net_amount", "tax_amount", "skontoPercent", "amountWithoutSkonto", "amountWithSkonto"].includes($parameter["fieldName"]) ? "number" : "string" }}',
+						default: 'number',
 						displayOptions: {
-							hide: {
-								fieldName: [],
+							show: {
+								fieldName: [
+									'total_amount',
+									'net_amount',
+									'tax_amount',
+									'skontoPercent',
+									'amountWithoutSkonto',
+									'amountWithSkonto',
+								],
 							},
 						},
 						options: [
@@ -305,7 +311,66 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 							},
 						],
 						description:
-							'The type of data this field contains. Auto-filled based on your field selection.',
+							'The type of data this field contains. Auto-selected as Number for amount fields.',
+					},
+					// Smart Field Type for text fields (auto-selects String)
+					{
+						displayName: 'Field Type',
+						name: 'fieldType',
+						type: 'options',
+						default: 'string',
+						displayOptions: {
+							show: {
+								fieldName: [
+									'customer_number',
+									'document_number',
+									'document_title',
+									'document_date',
+									'dueDate',
+									'dueDateSkonto',
+									'sender',
+									'recipient',
+									'sender_address',
+									'recipient_address',
+									'reference',
+									'company_name',
+									'address',
+									'payment_method',
+									'phone_number',
+									'email',
+									'__custom__',
+								],
+							},
+						},
+						options: [
+							{
+								name: 'Text (String)',
+								value: 'string',
+								description: 'Text content like names, addresses, references',
+							},
+							{
+								name: 'Number',
+								value: 'number',
+								description: 'Numeric values like amounts, quantities, IDs',
+							},
+							{
+								name: 'Date',
+								value: 'string',
+								description: 'Date values (stored as string)',
+							},
+							{
+								name: 'List (Array)',
+								value: 'array',
+								description: 'Multiple items like authors, keywords, items',
+							},
+							{
+								name: 'Yes/No (Boolean)',
+								value: 'boolean',
+								description: 'True/false values',
+							},
+						],
+						description:
+							'The type of data this field contains. Auto-selected as String for text fields.',
 					},
 					// Smart Auto-Fill Notice
 					{
@@ -321,21 +386,292 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 						description:
 							'Field Type and Description are automatically filled based on your selection. You can still modify them if needed.',
 					},
-					// Smart Description with dynamic defaults
+					// Smart Descriptions for each predefined field
 					{
 						displayName: 'Description',
 						name: 'description',
 						type: 'string',
-						default:
-							'={{ $parameter["fieldName"] === "total_amount" ? "Total amount including all taxes and fees" : $parameter["fieldName"] === "net_amount" ? "Net amount before taxes" : $parameter["fieldName"] === "tax_amount" ? "Tax amount" : $parameter["fieldName"] === "skontoPercent" ? "Early payment discount percentage as decimal (e.g. \\"Skonto 2%\\", \\"2,0% discount\\"). Extract decimal value, return null if not found." : $parameter["fieldName"] === "amountWithoutSkonto" ? "Gross amount from lines like \\"Bruttobetrag\\", \\"Gesamt\\", \\"Total\\" or net + tax. Return as decimal with dot separator, null if not found." : $parameter["fieldName"] === "amountWithSkonto" ? "Amount with early payment discount applied (explicit \\"Zahlbetrag\\" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found." : $parameter["fieldName"] === "customer_number" ? "Customer or client identification number" : $parameter["fieldName"] === "document_number" ? "Invoice, receipt, or document number" : $parameter["fieldName"] === "document_title" ? "Title or brief summary of the document content (e.g. \\"Invoice for IT Services\\", \\"Contract for Office Rental\\")" : $parameter["fieldName"] === "document_date" ? "Date when the document was created in DD.MM.YYYY format, return null if not found" : $parameter["fieldName"] === "dueDate" ? "Payment due date in DD.MM.YYYY format, return null if not found" : $parameter["fieldName"] === "dueDateSkonto" ? "Early payment discount due date in DD.MM.YYYY format, return null if not found" : $parameter["fieldName"] === "sender" ? "Name or company name of the sender (without address)" : $parameter["fieldName"] === "recipient" ? "Name or company name of the recipient (without address)" : $parameter["fieldName"] === "sender_address" ? "Full address of the sender" : $parameter["fieldName"] === "recipient_address" ? "Full address of the recipient" : $parameter["fieldName"] === "reference" ? "File number, case reference or subject line" : $parameter["fieldName"] === "company_name" ? "Name of the company" : $parameter["fieldName"] === "address" ? "Street address" : $parameter["fieldName"] === "payment_method" ? "How the payment was made" : $parameter["fieldName"] === "phone_number" ? "Contact phone number" : $parameter["fieldName"] === "email" ? "Email address" : "" }}',
+						default: 'Total amount including all taxes and fees',
 						displayOptions: {
-							hide: {
-								fieldName: ['__custom__'],
+							show: {
+								fieldName: ['total_amount'],
 							},
 						},
 						required: true,
-						description:
-							'Auto-filled based on your field selection. You can modify this as needed.',
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Net amount before taxes',
+						displayOptions: {
+							show: {
+								fieldName: ['net_amount'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Tax amount',
+						displayOptions: {
+							show: {
+								fieldName: ['tax_amount'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Early payment discount percentage as decimal (e.g. "Skonto 2%", "2,0% discount"). Extract decimal value, return null if not found.',
+						displayOptions: {
+							show: {
+								fieldName: ['skontoPercent'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Gross amount from lines like "Bruttobetrag", "Gesamt", "Total" or net + tax. Return as decimal with dot separator, null if not found.',
+						displayOptions: {
+							show: {
+								fieldName: ['amountWithoutSkonto'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Amount with early payment discount applied (explicit "Zahlbetrag" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found.',
+						displayOptions: {
+							show: {
+								fieldName: ['amountWithSkonto'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Customer or client identification number',
+						displayOptions: {
+							show: {
+								fieldName: ['customer_number'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Invoice, receipt, or document number',
+						displayOptions: {
+							show: {
+								fieldName: ['document_number'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Title or brief summary of the document content (e.g. "Invoice for IT Services", "Contract for Office Rental")',
+						displayOptions: {
+							show: {
+								fieldName: ['document_title'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Date when the document was created in DD.MM.YYYY format, return null if not found',
+						displayOptions: {
+							show: {
+								fieldName: ['document_date'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Payment due date in DD.MM.YYYY format, return null if not found',
+						displayOptions: {
+							show: {
+								fieldName: ['dueDate'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Early payment discount due date in DD.MM.YYYY format, return null if not found',
+						displayOptions: {
+							show: {
+								fieldName: ['dueDateSkonto'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Name or company name of the sender (without address)',
+						displayOptions: {
+							show: {
+								fieldName: ['sender'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Name or company name of the recipient (without address)',
+						displayOptions: {
+							show: {
+								fieldName: ['recipient'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Full address of the sender',
+						displayOptions: {
+							show: {
+								fieldName: ['sender_address'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Full address of the recipient',
+						displayOptions: {
+							show: {
+								fieldName: ['recipient_address'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'File number, case reference or subject line',
+						displayOptions: {
+							show: {
+								fieldName: ['reference'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Name of the company',
+						displayOptions: {
+							show: {
+								fieldName: ['company_name'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Street address',
+						displayOptions: {
+							show: {
+								fieldName: ['address'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'How the payment was made',
+						displayOptions: {
+							show: {
+								fieldName: ['payment_method'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Contact phone number',
+						displayOptions: {
+							show: {
+								fieldName: ['phone_number'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
+					},
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: 'Email address',
+						displayOptions: {
+							show: {
+								fieldName: ['email'],
+							},
+						},
+						required: true,
+						description: 'Auto-filled smart description. You can modify this as needed.',
 					},
 					// Custom field description
 					{
