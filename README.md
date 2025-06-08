@@ -83,55 +83,39 @@ Advanced processing that combines text extraction with structured data annotatio
 1. **Read File**: Load your document (PDF, image, etc.)
 2. **Mistral OCR**: Connect to the Mistral OCR node
 3. **Select Operation**: Choose "OCR with Annotations"
-4. **Choose Annotation Types**: Select BBox and/or Document annotations
-5. **Configure Schemas**: Define what information to extract:
+4. **Choose Document Template**: Select from predefined templates or create custom fields
+5. **Configure Extraction**: Easy-to-use interface - no JSON knowledge required!
 
-**Example BBox Schema** (for charts/figures):
-```json
-{
-  "chart_type": {
-    "type": "string",
-    "description": "Type of chart (bar, line, pie, etc.)"
-  },
-  "title": {
-    "type": "string", 
-    "description": "Chart title or heading"
-  },
-  "key_insights": {
-    "type": "array",
-    "items": {"type": "string"},
-    "description": "Main insights from the chart"
-  }
-}
-```
+**🎯 Document Templates Available:**
 
-**Example Document Schema** (for research papers):
-```json
-{
-  "language": {
-    "type": "string",
-    "description": "Primary language of the document"
-  },
-  "document_type": {
-    "type": "string", 
-    "description": "Type of document (research paper, report, etc.)"
-  },
-  "abstract": {
-    "type": "string",
-    "description": "Document abstract or summary"
-  },
-  "authors": {
-    "type": "array",
-    "items": {"type": "string"},
-    "description": "List of document authors"
-  },
-  "keywords": {
-    "type": "array", 
-    "items": {"type": "string"},
-    "description": "Key topics and themes"
-  }
-}
-```
+- 📄 **Invoice/Bill (Rechnung)**: Total amount, customer number, invoice date, vendor details
+- 📧 **Letter/Correspondence (Brief)**: Sender, recipient, date, reference, subject
+- 📋 **Contract (Vertrag)**: Parties, contract dates, amounts, key terms
+- 🧾 **Receipt (Beleg)**: Store name, total amount, items, payment method
+- 🆔 **ID Document (Ausweis)**: Name, birth date, ID numbers, validity dates
+- 📖 **Research Paper**: Title, authors, abstract, keywords, publication info
+
+**⚡ Quick Field Selection:**
+
+For custom extractions, simply click "Add Quick Field" to instantly add:
+- 💰 Total Amount (Gesamtbetrag)
+- 👤 Customer Number (Kundennummer) 
+- 📄 Document Number (Belegnummer)
+- 📅 Document Date (Dokumentendatum)
+- 📧 Sender (Absender)
+- 📨 Recipient (Empfänger)  
+- 📋 Reference (Aktenzeichen)
+- 💳 Payment Method (Zahlungsart)
+- 🏪 Company Name (Firmenname)
+- 📍 Address (Adresse)
+
+**🎨 Element Analysis:**
+
+Enable "Include Element Analysis" to automatically analyze charts, figures, tables and other visual elements.
+
+**⚙️ Advanced Mode:**
+
+For expert users: Enable "Advanced Mode" to manually define JSON schemas.
 
 6. **Execute**: Get OCR text PLUS structured annotations in a single response!
 
@@ -144,29 +128,33 @@ Advanced processing that combines text extraction with structured data annotatio
 
 ### Annotations Response  
 Everything from Basic OCR plus:
-- **bbox_annotations**: Array of annotations for document elements (charts, figures, etc.)
-- **document_annotation**: Structured information about the entire document
-- **Enhanced metadata** with annotation types used
+- **bbox_annotations**: Array of annotations for visual elements (charts, figures, etc.) - if enabled
+- **document_annotation**: Structured information based on your chosen template or custom fields
+- **Enhanced metadata** with template and settings used
 
-Example annotations response:
+Example annotations response (Invoice template):
 ```json
 {
   "text": "...",
+  "document_annotation": {
+    "total_amount": 1247.50,
+    "customer_number": "CUST-2024-001",
+    "invoice_number": "INV-240115-789",
+    "invoice_date": "2024-01-15",
+    "vendor_name": "TechServices GmbH",
+    "customer_name": "Müller Industries"
+  },
   "bbox_annotations": [
     {
-      "chart_type": "line chart",
-      "title": "Sales Performance Q1-Q4", 
-      "key_insights": ["Revenue increased 23%", "Peak in Q3"]
+      "element_type": "table",
+      "description": "Itemized billing table with services and costs",
+      "key_data": ["Software License: €999.00", "Support: €248.50"]
     }
   ],
-  "document_annotation": {
-    "language": "English",
-    "document_type": "quarterly report",
-    "keywords": ["sales", "performance", "revenue"]
-  },
   "_metadata": {
     "operation": "ocrWithAnnotations",
-    "annotationTypes": ["bbox", "document"],
+    "documentTemplate": "invoice",
+    "includeBboxAnnotations": true,
     "processedAt": "2024-01-01T12:00:00Z"
   }
 }
@@ -174,23 +162,25 @@ Example annotations response:
 
 ## Use Cases
 
-### BBox Annotations Perfect For:
-- 📊 **Chart Analysis**: Extract data insights from graphs and charts
-- 📋 **Form Processing**: Structure form fields and signatures  
-- 🖼️ **Image Cataloging**: Classify and describe images/figures
-- 📄 **Layout Analysis**: Understand document structure and elements
+### Template-Based Extraction Perfect For:
+- 📄 **Invoice Processing**: Automatically extract amounts, customer details, dates
+- 📧 **Mail Management**: Parse correspondence for sender, recipient, references
+- 📋 **Contract Analysis**: Extract parties, terms, dates, and amounts
+- 🧾 **Expense Management**: Process receipts and extract transaction details
+- 🆔 **Identity Verification**: Extract personal details from ID documents
+- 📖 **Research Automation**: Process academic papers for metadata
 
-### Document Annotations Perfect For:
-- 📚 **Document Classification**: Categorize document types automatically
-- 🔍 **Content Analysis**: Extract themes, topics, and key information
-- 📊 **Metadata Extraction**: Get structured document properties
-- 📑 **Document Summarization**: Generate structured summaries
+### Element Analysis Perfect For:
+- 📊 **Chart Processing**: Extract insights from graphs and visualizations
+- 📋 **Form Recognition**: Structure form fields and analyze layouts
+- 🖼️ **Figure Analysis**: Describe and categorize images and diagrams
+- 📑 **Table Extraction**: Convert tables to structured data
 
 ### Combined Power:
-- 📖 **Research Paper Processing**: Extract structure + analyze figures
-- 📋 **Report Analysis**: Get overview + detailed chart insights  
-- 📄 **Invoice Processing**: Document metadata + specific field extraction
-- 📊 **Presentation Analysis**: Slide content + individual chart descriptions
+- 📄 **Smart Invoice Processing**: Get structured data + analyze embedded charts
+- 📧 **Complete Document Analysis**: Extract metadata + process attachments
+- 📊 **Report Intelligence**: Document summary + detailed figure insights
+- 📋 **Comprehensive Form Processing**: Field extraction + signature analysis
 
 ## Error Handling
 
@@ -244,16 +234,18 @@ npm run format     # Format only
 - ✅ **Configurable options** - Model selection, expiry times, base64 output
 - ✅ **Error handling** - Comprehensive error management
 - ✅ **Metadata included** - File IDs, processing timestamps, URLs
-- ✅ **BBox Annotations** - ✨ Extract structured data from document elements
-- ✅ **Document Annotations** - ✨ Get structured document-level information  
-- ✅ **Flexible JSON Schemas** - ✨ Define custom annotation structures
-- ✅ **Combined Operations** - ✨ OCR + Annotations in one step
+- ✅ **Template-Based Extraction** - ✨ Pre-built templates for common documents (invoices, letters, contracts, etc.)
+- ✅ **Custom Field Builder** - ✨ Easy-to-use interface for defining extraction fields
+- ✅ **Quick Field Selection** - ✨ One-click addition of common fields (amounts, dates, references)
+- ✅ **Visual Element Analysis** - ✨ Optional chart, table, and figure analysis
+- ✅ **Advanced Mode** - ✨ Raw JSON schema access for power users
+- ✅ **Combined Operations** - ✨ OCR + Structured Extraction in one step
 - ✅ **n8n best practices** - Following official node development standards
 
 ## Limitations
 
-- **Document Annotations**: Limited to 8 pages maximum
-- **BBox Annotations**: No page limit
+- **Document Templates/Custom Fields**: Limited to 8 pages maximum
+- **Element Analysis**: No page limit
 - **File Size**: Maximum 50MB per document
 - **Document Length**: Maximum 1,000 pages
 
