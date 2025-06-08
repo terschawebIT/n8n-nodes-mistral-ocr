@@ -160,17 +160,20 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 							{
 								name: '💸 Skonto Percent (skontoPercent)',
 								value: 'skontoPercent',
-								description: 'Early payment discount percentage as decimal (e.g. "Skonto 2%", "2,0% discount"). Extract decimal value, return null if not found.',
+								description:
+									'Early payment discount percentage as decimal (e.g. "Skonto 2%", "2,0% discount"). Extract decimal value, return null if not found.',
 							},
 							{
 								name: '💵 Amount without Skonto (amountWithoutSkonto)',
 								value: 'amountWithoutSkonto',
-								description: 'Gross amount from lines like "Bruttobetrag", "Gesamt", "Total" or net + tax. Return as decimal with dot separator, null if not found.',
+								description:
+									'Gross amount from lines like "Bruttobetrag", "Gesamt", "Total" or net + tax. Return as decimal with dot separator, null if not found.',
 							},
 							{
 								name: '💴 Amount with Skonto (amountWithSkonto)',
 								value: 'amountWithSkonto',
-								description: 'Amount with early payment discount applied (explicit "Zahlbetrag" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found.',
+								description:
+									'Amount with early payment discount applied (explicit "Zahlbetrag" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found.',
 							},
 							{
 								name: '👤 Customer Number (customer_number)',
@@ -185,12 +188,14 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 							{
 								name: '📝 Document Title (document_title)',
 								value: 'document_title',
-								description: 'Title or brief summary of the document content (e.g. "Invoice for IT Services", "Contract for Office Rental")',
+								description:
+									'Title or brief summary of the document content (e.g. "Invoice for IT Services", "Contract for Office Rental")',
 							},
 							{
 								name: '📅 Document Date (document_date)',
 								value: 'document_date',
-								description: 'Date when the document was created in DD.MM.YYYY format, return null if not found',
+								description:
+									'Date when the document was created in DD.MM.YYYY format, return null if not found',
 							},
 							{
 								name: '⏰ Due Date (dueDate)',
@@ -200,7 +205,8 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 							{
 								name: '⚡ Skonto Due Date (dueDateSkonto)',
 								value: 'dueDateSkonto',
-								description: 'Early payment discount due date in DD.MM.YYYY format, return null if not found',
+								description:
+									'Early payment discount due date in DD.MM.YYYY format, return null if not found',
 							},
 							{
 								name: '📧 Sender (sender)',
@@ -331,8 +337,6 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 		description:
 			'Define the fields you want to extract from the document. Add as many fields as you need.',
 	},
-
-
 
 	// Include Element Analysis
 	{

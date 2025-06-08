@@ -8,24 +8,85 @@ export function getQuickFieldDefinitions(): Record<
 	{ type: 'string' | 'number' | 'boolean' | 'array'; description: string; required?: boolean }
 > {
 	return {
-		total_amount: { type: 'number', description: 'Total amount including all taxes and fees', required: true },
+		total_amount: {
+			type: 'number',
+			description: 'Total amount including all taxes and fees',
+			required: true,
+		},
 		net_amount: { type: 'number', description: 'Net amount before taxes', required: false },
 		tax_amount: { type: 'number', description: 'Tax amount', required: false },
-		customer_number: { type: 'string', description: 'Customer or client identification number', required: false },
-		document_number: { type: 'string', description: 'Invoice, receipt, or document number', required: false },
-		document_title: { type: 'string', description: 'Title or brief summary of the document content (e.g. "Invoice for IT Services", "Contract for Office Rental")', required: false },
-		document_date: { type: 'string', description: 'Date when the document was created in DD.MM.YYYY format, return null if not found', required: true },
+		customer_number: {
+			type: 'string',
+			description: 'Customer or client identification number',
+			required: false,
+		},
+		document_number: {
+			type: 'string',
+			description: 'Invoice, receipt, or document number',
+			required: false,
+		},
+		document_title: {
+			type: 'string',
+			description:
+				'Title or brief summary of the document content (e.g. "Invoice for IT Services", "Contract for Office Rental")',
+			required: false,
+		},
+		document_date: {
+			type: 'string',
+			description:
+				'Date when the document was created in DD.MM.YYYY format, return null if not found',
+			required: true,
+		},
 		due_date: { type: 'string', description: 'Payment due date', required: false },
-		dueDate: { type: 'string', description: 'Payment due date in DD.MM.YYYY format, return null if not found', required: false },
-		dueDateSkonto: { type: 'string', description: 'Early payment discount due date in DD.MM.YYYY format, return null if not found', required: false },
-		skontoPercent: { type: 'number', description: 'Early payment discount percentage as decimal (e.g. "Skonto 2%", "2,0% discount"). Extract decimal value, return null if not found.', required: false },
-		amountWithoutSkonto: { type: 'number', description: 'Gross amount from lines like "Bruttobetrag", "Gesamt", "Total" or net + tax. Return as decimal with dot separator, null if not found.', required: false },
-		amountWithSkonto: { type: 'number', description: 'Amount with early payment discount applied (explicit "Zahlbetrag" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found.', required: false },
-		sender: { type: 'string', description: 'Name or company name of the sender (without address)', required: false },
-		recipient: { type: 'string', description: 'Name or company name of the recipient (without address)', required: false },
+		dueDate: {
+			type: 'string',
+			description: 'Payment due date in DD.MM.YYYY format, return null if not found',
+			required: false,
+		},
+		dueDateSkonto: {
+			type: 'string',
+			description: 'Early payment discount due date in DD.MM.YYYY format, return null if not found',
+			required: false,
+		},
+		skontoPercent: {
+			type: 'number',
+			description:
+				'Early payment discount percentage as decimal (e.g. "Skonto 2%", "2,0% discount"). Extract decimal value, return null if not found.',
+			required: false,
+		},
+		amountWithoutSkonto: {
+			type: 'number',
+			description:
+				'Gross amount from lines like "Bruttobetrag", "Gesamt", "Total" or net + tax. Return as decimal with dot separator, null if not found.',
+			required: false,
+		},
+		amountWithSkonto: {
+			type: 'number',
+			description:
+				'Amount with early payment discount applied (explicit "Zahlbetrag" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found.',
+			required: false,
+		},
+		sender: {
+			type: 'string',
+			description: 'Name or company name of the sender (without address)',
+			required: false,
+		},
+		recipient: {
+			type: 'string',
+			description: 'Name or company name of the recipient (without address)',
+			required: false,
+		},
 		sender_address: { type: 'string', description: 'Full address of the sender', required: false },
-		recipient_address: { type: 'string', description: 'Full address of the recipient', required: false },
-		reference: { type: 'string', description: 'File number, case reference or subject line', required: false },
+		recipient_address: {
+			type: 'string',
+			description: 'Full address of the recipient',
+			required: false,
+		},
+		reference: {
+			type: 'string',
+			description: 'File number, case reference or subject line',
+			required: false,
+		},
 		company_name: { type: 'string', description: 'Name of the company', required: false },
 		address: { type: 'string', description: 'Street address', required: false },
 		payment_method: { type: 'string', description: 'How the payment was made', required: false },
@@ -48,6 +109,30 @@ export function parseCustomFieldsJson(customFieldsJson: string): CustomFieldSche
 }
 
 /**
+ * Process a single field from the collection
+ */
+function processField(field: any): { fieldName: string; fieldConfig: any } | null {
+	// Handle custom field names vs predefined field names
+	const fieldName = field.fieldName === '__custom__' ? field.customFieldName : field.fieldName;
+
+	if (!fieldName || !field.fieldType || !field.description) {
+		return null;
+	}
+
+	const fieldConfig: any = {
+		type: field.fieldType === 'array' ? 'array' : field.fieldType,
+		description: field.description,
+	};
+
+	// Add items property for arrays
+	if (field.fieldType === 'array') {
+		fieldConfig.items = { type: 'string' };
+	}
+
+	return { fieldName, fieldConfig };
+}
+
+/**
  * Build custom fields schema from UI collection
  */
 export function buildCustomFieldsFromCollection(customFields: any): CustomFieldSchema {
@@ -56,19 +141,9 @@ export function buildCustomFieldsFromCollection(customFields: any): CustomFieldS
 	// Process fields from the collection
 	if (customFields?.field && Array.isArray(customFields.field)) {
 		for (const field of customFields.field) {
-			// Handle custom field names vs predefined field names
-			const fieldName = field.fieldName === '__custom__' ? field.customFieldName : field.fieldName;
-
-			if (fieldName && field.fieldType && field.description) {
-				schema[fieldName] = {
-					type: field.fieldType === 'array' ? 'array' : field.fieldType,
-					description: field.description,
-				};
-
-				// Add items property for arrays
-				if (field.fieldType === 'array') {
-					schema[fieldName].items = { type: 'string' };
-				}
+			const processedField = processField(field);
+			if (processedField) {
+				schema[processedField.fieldName] = processedField.fieldConfig;
 			}
 		}
 	}
@@ -82,7 +157,7 @@ export function buildCustomFieldsFromCollection(customFields: any): CustomFieldS
 export function buildJsonSchema(
 	schemaObj: CustomFieldSchema,
 	schemaName: string,
-	customFieldsConfig?: any
+	customFieldsConfig?: any,
 ): any {
 	const properties: any = {};
 	const required: string[] = [];
