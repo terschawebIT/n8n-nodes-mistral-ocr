@@ -150,6 +150,7 @@ export class MistralOcr implements INodeType {
 
 					// Build document annotation schema
 					let documentSchema: any = {};
+					let customFields: any = undefined;
 
 					if (advancedMode) {
 						// Use advanced JSON schema mode
@@ -169,10 +170,9 @@ export class MistralOcr implements INodeType {
 					} else {
 						// Use template-based or custom field approach
 						if (documentTemplate === 'custom') {
-							const customFields = this.getNodeParameter('customFields', i, { field: [] }) as any;
-							const quickFields = this.getNodeParameter('quickFields', i, []) as string[];
+							customFields = this.getNodeParameter('customFields', i, { field: [] }) as any;
 							try {
-								documentSchema = buildCustomFieldsFromCollection(customFields, quickFields);
+								documentSchema = buildCustomFieldsFromCollection(customFields);
 							} catch (error: any) {
 								throw new NodeOperationError(this.getNode(), error.message, { itemIndex: i });
 							}
@@ -186,6 +186,7 @@ export class MistralOcr implements INodeType {
 						ocrRequestBody.document_annotation_format = buildJsonSchema(
 							documentSchema,
 							'DocumentAnnotation',
+							documentTemplate === 'custom' ? customFields : undefined,
 						);
 
 						// Add pages parameter (limit to 8 for document annotations)

@@ -138,11 +138,141 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 					{
 						displayName: 'Field Name',
 						name: 'fieldName',
-						type: 'string',
+						type: 'options',
 						default: '',
 						required: true,
-						description: 'Name of the field to extract (e.g., total_amount, customer_name)',
-						placeholder: 'field_name',
+						options: [
+							{
+								name: '💰 Total Amount (total_amount)',
+								value: 'total_amount',
+								description: 'Total amount including all taxes and fees',
+							},
+							{
+								name: '💳 Net Amount (net_amount)',
+								value: 'net_amount',
+								description: 'Net amount before taxes',
+							},
+							{
+								name: '🏷️ Tax Amount (tax_amount)',
+								value: 'tax_amount',
+								description: 'Tax amount',
+							},
+							{
+								name: '💸 Skonto Percent (skontoPercent)',
+								value: 'skontoPercent',
+								description: 'Early payment discount percentage as decimal (e.g. "Skonto 2%", "2,0% discount"). Extract decimal value, return null if not found.',
+							},
+							{
+								name: '💵 Amount without Skonto (amountWithoutSkonto)',
+								value: 'amountWithoutSkonto',
+								description: 'Gross amount from lines like "Bruttobetrag", "Gesamt", "Total" or net + tax. Return as decimal with dot separator, null if not found.',
+							},
+							{
+								name: '💴 Amount with Skonto (amountWithSkonto)',
+								value: 'amountWithSkonto',
+								description: 'Amount with early payment discount applied (explicit "Zahlbetrag" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found.',
+							},
+							{
+								name: '👤 Customer Number (customer_number)',
+								value: 'customer_number',
+								description: 'Customer or client identification number',
+							},
+							{
+								name: '📄 Document Number (document_number)',
+								value: 'document_number',
+								description: 'Invoice, receipt, or document number',
+							},
+							{
+								name: '📝 Document Title (document_title)',
+								value: 'document_title',
+								description: 'Title or brief summary of the document content (e.g. "Invoice for IT Services", "Contract for Office Rental")',
+							},
+							{
+								name: '📅 Document Date (document_date)',
+								value: 'document_date',
+								description: 'Date when the document was created in DD.MM.YYYY format, return null if not found',
+							},
+							{
+								name: '⏰ Due Date (dueDate)',
+								value: 'dueDate',
+								description: 'Payment due date in DD.MM.YYYY format, return null if not found',
+							},
+							{
+								name: '⚡ Skonto Due Date (dueDateSkonto)',
+								value: 'dueDateSkonto',
+								description: 'Early payment discount due date in DD.MM.YYYY format, return null if not found',
+							},
+							{
+								name: '📧 Sender (sender)',
+								value: 'sender',
+								description: 'Name or company name of the sender (without address)',
+							},
+							{
+								name: '📨 Recipient (recipient)',
+								value: 'recipient',
+								description: 'Name or company name of the recipient (without address)',
+							},
+							{
+								name: '📍 Sender Address (sender_address)',
+								value: 'sender_address',
+								description: 'Full address of the sender',
+							},
+							{
+								name: '📮 Recipient Address (recipient_address)',
+								value: 'recipient_address',
+								description: 'Full address of the recipient',
+							},
+							{
+								name: '📋 Reference (reference)',
+								value: 'reference',
+								description: 'File number, case reference or subject line',
+							},
+							{
+								name: '🏪 Company Name (company_name)',
+								value: 'company_name',
+								description: 'Name of the company',
+							},
+							{
+								name: '📍 Address (address)',
+								value: 'address',
+								description: 'Street address',
+							},
+							{
+								name: '💳 Payment Method (payment_method)',
+								value: 'payment_method',
+								description: 'How the payment was made',
+							},
+							{
+								name: '📞 Phone Number (phone_number)',
+								value: 'phone_number',
+								description: 'Contact phone number',
+							},
+							{
+								name: '✉️ Email Address (email)',
+								value: 'email',
+								description: 'Email address',
+							},
+							{
+								name: '🔧 Custom Field Name',
+								value: '__custom__',
+								description: 'Enter a custom field name',
+							},
+						],
+						description: 'Select a common field or choose "Custom" to enter your own field name',
+					},
+					{
+						displayName: 'Custom Field Name',
+						name: 'customFieldName',
+						type: 'string',
+						displayOptions: {
+							show: {
+								fieldName: ['__custom__'],
+							},
+						},
+						default: '',
+						required: true,
+						description: 'Enter your custom field name',
+						placeholder: 'my_custom_field',
 					},
 					{
 						displayName: 'Field Type',
@@ -185,7 +315,7 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 						default: '',
 						required: true,
 						description:
-							'Describe what this field should contain to help the AI extract it correctly',
+							'Describe what this field should contain to help the AI extract it correctly. For quick fields, this is pre-filled but you can modify it.',
 						placeholder: 'What information should be extracted for this field?',
 					},
 					{
@@ -202,133 +332,7 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 			'Define the fields you want to extract from the document. Add as many fields as you need.',
 	},
 
-	// Quick Field Templates
-	{
-		displayName: 'Quick Add Common Fields',
-		name: 'quickFields',
-		type: 'multiOptions',
-		displayOptions: {
-			show: {
-				operation: ['ocrWithAnnotations'],
-				documentTemplate: ['custom'],
-			},
-		},
-		default: [],
-		options: [
-			{
-				name: '💰 Total Amount (Gesamtbetrag)',
-				value: 'total_amount',
-				description: 'Total amount including taxes',
-			},
-			{
-				name: '💳 Net Amount (Nettobetrag)',
-				value: 'net_amount',
-				description: 'Amount before taxes',
-			},
-			{
-				name: '🏷️ Tax Amount (Steuerbetrag)',
-				value: 'tax_amount',
-				description: 'Tax amount',
-			},
-			{
-				name: '💸 Skonto Percent (Skonto %)',
-				value: 'skontoPercent',
-				description: 'Early payment discount percentage as decimal (e.g. "Skonto 2%", "2,0% discount"). Extract decimal value, return null if not found.',
-			},
-			{
-				name: '💵 Amount without Skonto (Betrag ohne Skonto)',
-				value: 'amountWithoutSkonto',
-				description: 'Gross amount from lines like "Bruttobetrag", "Gesamt", "Total" or net + tax. Return as decimal with dot separator, null if not found.',
-			},
-			{
-				name: '💴 Amount with Skonto (Betrag mit Skonto)',
-				value: 'amountWithSkonto',
-				description: 'Amount with early payment discount applied (explicit "Zahlbetrag" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found.',
-			},
-			{
-				name: '👤 Customer Number (Kundennummer)',
-				value: 'customer_number',
-				description: 'Customer or client ID',
-			},
-			{
-				name: '📄 Document Number (Belegnummer)',
-				value: 'document_number',
-				description: 'Invoice, receipt, or document number',
-			},
-			{
-				name: '📝 Document Title (Dokumententitel)',
-				value: 'document_title',
-				description: 'Title or brief summary of the document content (e.g. "Invoice for IT Services", "Contract for Office Rental")',
-			},
-			{
-				name: '📅 Document Date (Dokumentendatum)',
-				value: 'document_date',
-				description: 'Date of the document in DD.MM.YYYY format, return null if not found',
-			},
-			{
-				name: '⏰ Due Date (Fälligkeitsdatum)',
-				value: 'dueDate',
-				description: 'Payment due date in DD.MM.YYYY format, return null if not found',
-			},
-			{
-				name: '⚡ Skonto Due Date (Skonto Fälligkeitsdatum)',
-				value: 'dueDateSkonto',
-				description: 'Early payment discount due date in DD.MM.YYYY format, return null if not found',
-			},
-			{
-				name: '📧 Sender (Absender)',
-				value: 'sender',
-				description: 'Name or company name of sender (without address)',
-			},
-			{
-				name: '📨 Recipient (Empfänger)',
-				value: 'recipient',
-				description: 'Name or company name of recipient (without address)',
-			},
-			{
-				name: '📍 Sender Address (Absender Adresse)',
-				value: 'sender_address',
-				description: 'Full address of the sender',
-			},
-			{
-				name: '📮 Recipient Address (Empfänger Adresse)',
-				value: 'recipient_address',
-				description: 'Full address of the recipient',
-			},
-			{
-				name: '📋 Reference (Aktenzeichen)',
-				value: 'reference',
-				description: 'File number or reference',
-			},
-			{
-				name: '🏪 Company Name (Firmenname)',
-				value: 'company_name',
-				description: 'Name of the company',
-			},
-			{
-				name: '📍 Address (Adresse)',
-				value: 'address',
-				description: 'Street address',
-			},
-			{
-				name: '💳 Payment Method (Zahlungsart)',
-				value: 'payment_method',
-				description: 'How payment was made',
-			},
-			{
-				name: '📞 Phone Number (Telefonnummer)',
-				value: 'phone_number',
-				description: 'Contact phone number',
-			},
-			{
-				name: '✉️ Email Address (E-Mail)',
-				value: 'email',
-				description: 'Email address',
-			},
-		],
-		description:
-			'Quickly add common fields to your custom field list above. Select the fields you need and they will be automatically added.',
-	},
+
 
 	// Include Element Analysis
 	{
