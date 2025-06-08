@@ -1,0 +1,51 @@
+{
+	"name": "n8n-nodes-mistral-ocr",
+	"version": "0.1.0",
+	"description": "n8n node for Mistral OCR API integration",
+	"keywords": ["n8n-community-node-package", "mistral", "ocr", "document-processing", "ai"],
+	"license": "MIT",
+	"homepage": "https://github.com/niko-terschawetz/n8n-nodes-mistral-ocr",
+	"author": {
+		"name": "Niko Terschawetz",
+		"email": "niko.terschawetz@example.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/niko-terschawetz/n8n-nodes-mistral-ocr.git"
+	},
+	"engines": {
+		"node": ">=20.10.0"
+	},
+	"packageManager": "npm@10.2.4",
+	"main": "index.js",
+	"scripts": {
+		"preinstall": "npx only-allow npm",
+		"build": "tsc && gulp build:icons",
+		"dev": "tsc --watch",
+		"format": "biome format --write .",
+		"lint": "biome lint .",
+		"lintfix": "biome lint --apply .",
+		"check": "biome check .",
+		"check:fix": "biome check --apply .",
+		"prepublishOnly": "npm run build && npm run check"
+	},
+	"files": ["dist"],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"credentials": ["dist/credentials/MistralApi.credentials.js"],
+		"nodes": ["dist/nodes/MistralOcr/MistralOcr.node.js"]
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.6.0",
+		"@types/node": "^22.15.30",
+		"gulp": "^4.0.2",
+		"n8n-workflow": "^1.48.0",
+		"typescript": "^5.5.3"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	},
+	"dependencies": {
+		"form-data": "^4.0.0"
+	}
+}

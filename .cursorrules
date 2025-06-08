@@ -1,0 +1,36 @@
+# Cursor Rules for n8n-nodes-mistral-ocr
+
+## Language Guidelines
+- **All code comments must be in English**
+- **All commit messages must be in English**
+- **All documentation (README, JSDoc, etc.) must be in English**
+- **Variable names and function names must be in English**
+- **Error messages and user-facing text should be in English**
+
+## n8n Node Development Standards
+- Follow n8n's coding conventions and standards
+- Use TypeScript for all node implementations
+- Follow the existing n8n-nodes-starter template structure
+- Implement proper error handling and validation
+- Include comprehensive JSDoc documentation
+- Use semantic versioning for releases
+
+## Code Style
+- Use descriptive variable and function names
+- Prefer explicit type definitions over any
+- Include proper error handling for API calls
+- Follow ESLint rules defined in the project
+- Use consistent formatting with Prettier
+
+## API Integration Guidelines
+- Implement proper authentication handling
+- Include rate limiting considerations
+- Handle API errors gracefully
+- Support both sync and async operations where appropriate
+- Follow REST API best practices
+
+## Testing Requirements
+- Write unit tests for core functionality
+- Include integration tests for API calls
+- Test error scenarios and edge cases
+- Validate input parameters properly

@@ -1,0 +1,46 @@
+# Source files
+nodes/
+credentials/
+tsconfig.json
+gulpfile.js
+
+# Development files
+.eslintrc.js
+.prettierrc.js
+.vscode/
+.cursorrules
+TODO.md
+
+# Test files
+test/
+tests/
+__tests__/
+
+# Documentation (will be in npm description)
+README.md
+
+# Git
+.git/
+.gitignore
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+.nyc_output
+
+# Dependency directories
+node_modules/
+
+# Optional files
+.env*
+.DS_Store
+Thumbs.db 
