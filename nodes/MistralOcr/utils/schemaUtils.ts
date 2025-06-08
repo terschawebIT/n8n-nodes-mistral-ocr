@@ -120,7 +120,12 @@ function processField(field: any): { fieldName: string; fieldConfig: any } | nul
 	}
 
 	const fieldConfig: any = {
-		type: field.fieldType === 'array' ? 'array' : field.fieldType === 'date' ? 'string' : field.fieldType,
+		type:
+			field.fieldType === 'array'
+				? 'array'
+				: field.fieldType === 'date'
+					? 'string'
+					: field.fieldType,
 		description: field.description,
 	};
 
