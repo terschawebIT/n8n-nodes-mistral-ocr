@@ -49,11 +49,19 @@ export const DOCUMENT_TEMPLATES: Record<DocumentTemplateType, DocumentTemplate> 
 	letter: {
 		sender: {
 			type: 'string',
-			description: 'Name and address of the sender',
+			description: 'Name or company name of the sender (without address)',
 		},
 		recipient: {
 			type: 'string',
-			description: 'Name and address of the recipient',
+			description: 'Name or company name of the recipient (without address)',
+		},
+		sender_address: {
+			type: 'string',
+			description: 'Full address of the sender',
+		},
+		recipient_address: {
+			type: 'string',
+			description: 'Full address of the recipient',
 		},
 		document_date: {
 			type: 'string',

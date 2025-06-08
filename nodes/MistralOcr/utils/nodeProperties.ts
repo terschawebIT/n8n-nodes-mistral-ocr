@@ -231,6 +231,21 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 				description: 'Tax amount',
 			},
 			{
+				name: '💸 Skonto Percent (Skonto %)',
+				value: 'skontoPercent',
+				description: 'Early payment discount percentage as decimal (e.g. "Skonto 2%", "2,0% discount"). Extract decimal value, return null if not found.',
+			},
+			{
+				name: '💵 Amount without Skonto (Betrag ohne Skonto)',
+				value: 'amountWithoutSkonto',
+				description: 'Gross amount from lines like "Bruttobetrag", "Gesamt", "Total" or net + tax. Return as decimal with dot separator, null if not found.',
+			},
+			{
+				name: '💴 Amount with Skonto (Betrag mit Skonto)',
+				value: 'amountWithSkonto',
+				description: 'Amount with early payment discount applied (explicit "Zahlbetrag" or calculated). Return as decimal with dot separator, 2 decimal places, null if not found.',
+			},
+			{
 				name: '👤 Customer Number (Kundennummer)',
 				value: 'customer_number',
 				description: 'Customer or client ID',
@@ -241,24 +256,44 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 				description: 'Invoice, receipt, or document number',
 			},
 			{
+				name: '📝 Document Title (Dokumententitel)',
+				value: 'document_title',
+				description: 'Title or brief summary of the document content (e.g. "Invoice for IT Services", "Contract for Office Rental")',
+			},
+			{
 				name: '📅 Document Date (Dokumentendatum)',
 				value: 'document_date',
-				description: 'Date of the document',
+				description: 'Date of the document in DD.MM.YYYY format, return null if not found',
 			},
 			{
 				name: '⏰ Due Date (Fälligkeitsdatum)',
-				value: 'due_date',
-				description: 'Payment due date',
+				value: 'dueDate',
+				description: 'Payment due date in DD.MM.YYYY format, return null if not found',
+			},
+			{
+				name: '⚡ Skonto Due Date (Skonto Fälligkeitsdatum)',
+				value: 'dueDateSkonto',
+				description: 'Early payment discount due date in DD.MM.YYYY format, return null if not found',
 			},
 			{
 				name: '📧 Sender (Absender)',
 				value: 'sender',
-				description: 'Name and address of sender',
+				description: 'Name or company name of sender (without address)',
 			},
 			{
 				name: '📨 Recipient (Empfänger)',
 				value: 'recipient',
-				description: 'Name and address of recipient',
+				description: 'Name or company name of recipient (without address)',
+			},
+			{
+				name: '📍 Sender Address (Absender Adresse)',
+				value: 'sender_address',
+				description: 'Full address of the sender',
+			},
+			{
+				name: '📮 Recipient Address (Empfänger Adresse)',
+				value: 'recipient_address',
+				description: 'Full address of the recipient',
 			},
 			{
 				name: '📋 Reference (Aktenzeichen)',
