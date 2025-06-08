@@ -1,3 +1,4 @@
+import FormData from 'form-data';
 import type {
 	IBinaryData,
 	IExecuteFunctions,
@@ -6,20 +7,19 @@ import type {
 	INodeTypeDescription,
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
-import FormData from 'form-data';
 
+import { DEFAULT_BBOX_SCHEMA, LIMITS, MISTRAL_API_ENDPOINTS } from './constants/defaults';
+import { getDocumentTemplate } from './templates/documentTemplates';
 // Local imports
 import type {
-	MistralOcrOptions,
+	DocumentTemplateType,
 	MistralApiResponse,
+	MistralOcrOptions,
 	MistralOcrRequest,
 	NodeExecutionMetadata,
-	DocumentTemplateType
 } from './types';
-import { getDocumentTemplate } from './templates/documentTemplates';
-import { parseCustomFieldsJson, buildJsonSchema, parsePages } from './utils/schemaUtils';
 import { NODE_PROPERTIES } from './utils/nodeProperties';
-import { MISTRAL_API_ENDPOINTS, LIMITS, DEFAULT_BBOX_SCHEMA } from './constants/defaults';
+import { buildJsonSchema, parseCustomFieldsJson, parsePages } from './utils/schemaUtils';
 
 export class MistralOcr implements INodeType {
 	description: INodeTypeDescription = {
@@ -47,6 +47,7 @@ export class MistralOcr implements INodeType {
 		properties: NODE_PROPERTIES,
 	};
 
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Main execute method naturally has high complexity due to various operation types
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
@@ -132,8 +133,14 @@ export class MistralOcr implements INodeType {
 
 				// Add annotations if requested
 				if (operation === 'ocrWithAnnotations') {
-					const documentTemplate = this.getNodeParameter('documentTemplate', i) as DocumentTemplateType;
-					const includeBboxAnnotations = this.getNodeParameter('includeBboxAnnotations', i) as boolean;
+					const documentTemplate = this.getNodeParameter(
+						'documentTemplate',
+						i,
+					) as DocumentTemplateType;
+					const includeBboxAnnotations = this.getNodeParameter(
+						'includeBboxAnnotations',
+						i,
+					) as boolean;
 					const advancedMode = this.getNodeParameter('advancedMode', i) as boolean;
 
 					// Build document annotation schema
@@ -141,7 +148,10 @@ export class MistralOcr implements INodeType {
 
 					if (advancedMode) {
 						// Use advanced JSON schema mode
-						const documentSchemaStr = this.getNodeParameter('documentAnnotationSchema', i) as string;
+						const documentSchemaStr = this.getNodeParameter(
+							'documentAnnotationSchema',
+							i,
+						) as string;
 						try {
 							documentSchema = JSON.parse(documentSchemaStr);
 						} catch (error: any) {
@@ -158,11 +168,7 @@ export class MistralOcr implements INodeType {
 							try {
 								documentSchema = parseCustomFieldsJson(customFieldsJson);
 							} catch (error: any) {
-								throw new NodeOperationError(
-									this.getNode(),
-									error.message,
-									{ itemIndex: i },
-								);
+								throw new NodeOperationError(this.getNode(), error.message, { itemIndex: i });
 							}
 						} else {
 							documentSchema = getDocumentTemplate(documentTemplate);
@@ -211,10 +217,7 @@ export class MistralOcr implements INodeType {
 							bboxSchema = DEFAULT_BBOX_SCHEMA;
 						}
 
-						ocrRequestBody.bbox_annotation_format = buildJsonSchema(
-							bboxSchema,
-							'BBoxAnnotation',
-						);
+						ocrRequestBody.bbox_annotation_format = buildJsonSchema(bboxSchema, 'BBoxAnnotation');
 					}
 				}
 
@@ -243,7 +246,10 @@ export class MistralOcr implements INodeType {
 
 				if (operation === 'ocrWithAnnotations') {
 					metadata.documentTemplate = this.getNodeParameter('documentTemplate', i) as string;
-					metadata.includeBboxAnnotations = this.getNodeParameter('includeBboxAnnotations', i) as boolean;
+					metadata.includeBboxAnnotations = this.getNodeParameter(
+						'includeBboxAnnotations',
+						i,
+					) as boolean;
 					metadata.advancedMode = this.getNodeParameter('advancedMode', i) as boolean;
 				}
 
@@ -253,7 +259,6 @@ export class MistralOcr implements INodeType {
 				};
 
 				returnData.push({ json: responseData });
-
 			} catch (error) {
 				if (this.continueOnFail()) {
 					const errorMessage = error instanceof Error ? error.message : 'Unknown error';

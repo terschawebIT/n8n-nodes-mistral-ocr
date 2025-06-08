@@ -1,5 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
-import { DEFAULT_CUSTOM_FIELDS, DEFAULT_BBOX_SCHEMA, LIMITS } from '../constants/defaults';
+import { DEFAULT_BBOX_SCHEMA, DEFAULT_CUSTOM_FIELDS, LIMITS } from '../constants/defaults';
 
 export const NODE_PROPERTIES: INodeProperties[] = [
 	{
@@ -112,7 +112,8 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 			},
 		},
 		default: JSON.stringify(DEFAULT_CUSTOM_FIELDS, null, 2),
-		description: 'Define the fields you want to extract as JSON schema. Common fields: total_amount (number), customer_number (string), document_date (string), sender (string), recipient (string), reference (string)',
+		description:
+			'Define the fields you want to extract as JSON schema. Common fields: total_amount (number), customer_number (string), document_date (string), sender (string), recipient (string), reference (string)',
 		placeholder: `{
   "field_name": {
     "type": "string",
@@ -132,8 +133,7 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description:
-			'Also analyze charts, figures, tables and other visual elements in the document',
+		description: 'Also analyze charts, figures, tables and other visual elements in the document',
 	},
 
 	// Advanced JSON Schema fallback
