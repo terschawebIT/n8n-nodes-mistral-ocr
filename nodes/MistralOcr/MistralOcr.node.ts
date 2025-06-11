@@ -6,7 +6,7 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
-import { NodeConnectionType, NodeOperationError, NodeApiError } from 'n8n-workflow';
+import { NodeApiError, NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 
 import { DEFAULT_BBOX_SCHEMA, LIMITS, MISTRAL_API_ENDPOINTS } from './constants/defaults';
 import { getDocumentTemplate } from './templates/documentTemplates';
@@ -27,7 +27,6 @@ import {
 } from './utils/schemaUtils';
 
 export class MistralOcr implements INodeType {
-
 	description: INodeTypeDescription = {
 		displayName: 'Mistral OCR',
 		name: 'mistralOcr',
@@ -61,14 +60,18 @@ export class MistralOcr implements INodeType {
 		// Helper function for rate limiting and retry logic
 		const makeRequestWithRetry = async (
 			requestOptions: any,
-			maxRetries: number = 3,
-			baseDelay: number = 1000,
+			maxRetries = 3,
+			baseDelay = 1000,
 		): Promise<any> => {
 			let lastError: any;
 
 			for (let attempt = 0; attempt <= maxRetries; attempt++) {
 				try {
-					return await this.helpers.httpRequestWithAuthentication.call(this, 'mistralApi', requestOptions);
+					return await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'mistralApi',
+						requestOptions,
+					);
 				} catch (error: any) {
 					lastError = error;
 
@@ -76,20 +79,22 @@ export class MistralOcr implements INodeType {
 					if (error.httpCode === '429' || error.message?.includes('429')) {
 						if (attempt < maxRetries) {
 							// Calculate exponential backoff delay
-							const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
-							console.log(`Rate limit hit, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
-							await new Promise(resolve => setTimeout(resolve, delay));
-							continue;
-						} else {
-							// Max retries reached, throw a more informative error
-							throw new NodeOperationError(
-								this.getNode(),
-								`Mistral API rate limit exceeded. Service tier capacity exceeded for this model. Please try again later or consider upgrading your Mistral API plan.`,
-								{
-									description: 'The Mistral OCR API is receiving too many requests. This usually happens when your API plan\'s rate limits are exceeded.',
-								}
+							const delay = baseDelay * 2 ** attempt + Math.random() * 1000;
+							console.log(
+								`Rate limit hit, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${maxRetries + 1})`,
 							);
+							await new Promise((resolve) => setTimeout(resolve, delay));
+							continue;
 						}
+						// Max retries reached, throw a more informative error
+						throw new NodeOperationError(
+							this.getNode(),
+							'Mistral API rate limit exceeded. Service tier capacity exceeded for this model. Please try again later or consider upgrading your Mistral API plan.',
+							{
+								description:
+									"The Mistral OCR API is receiving too many requests. This usually happens when your API plan's rate limits are exceeded.",
+							},
+						);
 					}
 
 					// If it's not a rate limiting error, throw immediately
