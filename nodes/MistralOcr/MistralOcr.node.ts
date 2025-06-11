@@ -6,7 +6,7 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
-import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { NodeConnectionType, NodeOperationError, NodeApiError } from 'n8n-workflow';
 
 import { DEFAULT_BBOX_SCHEMA, LIMITS, MISTRAL_API_ENDPOINTS } from './constants/defaults';
 import { getDocumentTemplate } from './templates/documentTemplates';
@@ -27,6 +27,7 @@ import {
 } from './utils/schemaUtils';
 
 export class MistralOcr implements INodeType {
+
 	description: INodeTypeDescription = {
 		displayName: 'Mistral OCR',
 		name: 'mistralOcr',
@@ -57,6 +58,48 @@ export class MistralOcr implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
+		// Helper function for rate limiting and retry logic
+		const makeRequestWithRetry = async (
+			requestOptions: any,
+			maxRetries: number = 3,
+			baseDelay: number = 1000,
+		): Promise<any> => {
+			let lastError: any;
+
+			for (let attempt = 0; attempt <= maxRetries; attempt++) {
+				try {
+					return await this.helpers.httpRequestWithAuthentication.call(this, 'mistralApi', requestOptions);
+				} catch (error: any) {
+					lastError = error;
+
+					// Check if it's a rate limiting error (429)
+					if (error.httpCode === '429' || error.message?.includes('429')) {
+						if (attempt < maxRetries) {
+							// Calculate exponential backoff delay
+							const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+							console.log(`Rate limit hit, retrying in ${Math.round(delay)}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
+							await new Promise(resolve => setTimeout(resolve, delay));
+							continue;
+						} else {
+							// Max retries reached, throw a more informative error
+							throw new NodeOperationError(
+								this.getNode(),
+								`Mistral API rate limit exceeded. Service tier capacity exceeded for this model. Please try again later or consider upgrading your Mistral API plan.`,
+								{
+									description: 'The Mistral OCR API is receiving too many requests. This usually happens when your API plan\'s rate limits are exceeded.',
+								}
+							);
+						}
+					}
+
+					// If it's not a rate limiting error, throw immediately
+					throw error;
+				}
+			}
+
+			throw lastError;
+		};
+
 		for (let i = 0; i < items.length; i++) {
 			try {
 				// Get parameters
@@ -75,6 +118,16 @@ export class MistralOcr implements INodeType {
 					);
 				}
 
+				// Validate file size (50MB limit according to Mistral documentation)
+				const fileSizeBytes = Buffer.byteLength(binaryData.data, 'base64');
+				if (fileSizeBytes > LIMITS.MAX_FILE_SIZE) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`File size (${Math.round(fileSizeBytes / 1024 / 1024)}MB) exceeds the maximum allowed size of ${LIMITS.MAX_FILE_SIZE / 1024 / 1024}MB`,
+						{ itemIndex: i },
+					);
+				}
+
 				// Step 1: Upload file to Mistral
 				const formData = new FormData();
 				formData.append('purpose', 'ocr');
@@ -83,18 +136,14 @@ export class MistralOcr implements INodeType {
 					contentType: binaryData.mimeType,
 				});
 
-				const uploadResponse = await this.helpers.httpRequestWithAuthentication.call(
-					this,
-					'mistralApi',
-					{
-						method: 'POST',
-						url: MISTRAL_API_ENDPOINTS.UPLOAD,
-						body: formData,
-						headers: {
-							...formData.getHeaders(),
-						},
+				const uploadResponse = await makeRequestWithRetry({
+					method: 'POST',
+					url: MISTRAL_API_ENDPOINTS.UPLOAD,
+					body: formData,
+					headers: {
+						...formData.getHeaders(),
 					},
-				);
+				});
 
 				if (!uploadResponse.id) {
 					throw new NodeOperationError(this.getNode(), 'Failed to upload file to Mistral API', {
@@ -103,20 +152,16 @@ export class MistralOcr implements INodeType {
 				}
 
 				// Step 2: Get signed URL
-				const signedUrlResponse = await this.helpers.httpRequestWithAuthentication.call(
-					this,
-					'mistralApi',
-					{
-						method: 'GET',
-						url: MISTRAL_API_ENDPOINTS.GET_URL(uploadResponse.id),
-						qs: {
-							expiry: options.expiryHours || LIMITS.DEFAULT_EXPIRY_HOURS,
-						},
-						headers: {
-							Accept: 'application/json',
-						},
+				const signedUrlResponse = await makeRequestWithRetry({
+					method: 'GET',
+					url: MISTRAL_API_ENDPOINTS.GET_URL(uploadResponse.id),
+					qs: {
+						expiry: options.expiryHours || LIMITS.DEFAULT_EXPIRY_HOURS,
 					},
-				);
+					headers: {
+						Accept: 'application/json',
+					},
+				});
 
 				if (!signedUrlResponse.url) {
 					throw new NodeOperationError(
@@ -229,19 +274,15 @@ export class MistralOcr implements INodeType {
 				}
 
 				// Step 4: Process OCR
-				const ocrResponse = await this.helpers.httpRequestWithAuthentication.call(
-					this,
-					'mistralApi',
-					{
-						method: 'POST',
-						url: MISTRAL_API_ENDPOINTS.OCR,
-						body: ocrRequestBody,
-						headers: {
-							'Content-Type': 'application/json',
-							Accept: 'application/json',
-						},
+				const ocrResponse = await makeRequestWithRetry({
+					method: 'POST',
+					url: MISTRAL_API_ENDPOINTS.OCR,
+					body: ocrRequestBody,
+					headers: {
+						'Content-Type': 'application/json',
+						Accept: 'application/json',
 					},
-				);
+				});
 
 				// Step 5: Build response
 				const metadata: NodeExecutionMetadata = {

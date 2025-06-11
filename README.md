@@ -98,8 +98,26 @@ For power users who need full control over JSON schemas:
 ## API Limits
 
 - **Document Annotations**: Maximum 8 pages per request
-- **File Size**: Up to 50MB
+- **File Size**: Up to 50MB per document
+- **Total Pages**: Up to 1000 pages per document
 - **File Expiry**: 1-168 hours (default: 24 hours)
+
+## Rate Limiting & Error Handling
+
+The node includes intelligent rate limiting and error handling:
+
+- **Automatic Retry**: 429 errors (rate limits) are automatically retried with exponential backoff
+- **Smart Backoff**: Delays increase exponentially (1s, 2s, 4s) with randomization to avoid thundering herd
+- **Descriptive Errors**: Clear error messages when rate limits are exceeded
+- **File Validation**: Pre-upload validation for file size and format
+- **Graceful Degradation**: Continue-on-fail support for batch processing
+
+### Rate Limit Error Handling
+If you encounter "Service tier capacity exceeded" errors:
+1. The node automatically retries up to 3 times
+2. Wait times increase with each retry attempt
+3. Consider upgrading your Mistral API plan for higher limits
+4. For batch processing, add delays between workflow executions
 
 ## Development
 
@@ -141,6 +159,14 @@ Contributions are welcome! The modular structure makes it easy to:
 - Update constants in `constants/defaults.ts`
 
 ## Changelog
+
+### v0.4.7 - Rate Limiting & Enhanced Error Handling
+- **NEW**: Automatic retry logic for 429 rate limit errors
+- **NEW**: Exponential backoff with randomization to prevent thundering herd
+- **NEW**: File size validation (50MB limit) before upload
+- **NEW**: Enhanced error messages for rate limiting issues
+- **IMPROVED**: Better API compliance with Mistral documentation
+- **FIXED**: Robust handling of "Service tier capacity exceeded" errors
 
 ### v0.3.0 - Modular Architecture
 - **BREAKING**: Restructured project into modules for better maintainability
