@@ -37,12 +37,12 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 	},
 
 	{
-		displayName: '📄 Supported File Formats',
+		displayName: '🚀 Mistral OCR 25.05 - Performance Leader',
 		name: 'supportedFormatsNotice',
 		type: 'notice',
 		default: '',
 		description:
-			'✅ PDF, Images (PNG/JPEG/GIF/etc.), Word (.docx), PowerPoint (.pptx), RTF, EPUB, LaTeX (.tex), Jupyter Notebooks (.ipynb), DokuWiki, BibTeX, Troff<br/>❌ Plain text files (.txt), CSV, JSON, XML are NOT supported. Convert them to PDF or image format first.',
+			'🏆 <strong>94.89% Accuracy Benchmark</strong> (vs Google 83.42%, Azure 89.52%, GPT-4o 89.77%)<br/>⚡ <strong>2000 pages/min processing speed</strong><br/>🌍 <strong>99%+ multilingual accuracy</strong> across thousands of languages<br/><br/>✅ <strong>Supported:</strong> PDF, Images (PNG/JPEG/GIF/WebP/TIFF), Word (.docx), PowerPoint (.pptx), RTF, EPUB, LaTeX, Jupyter Notebooks (.ipynb)<br/>❌ <strong>Not supported:</strong> Plain text (.txt), CSV, JSON, XML - convert to PDF/image first',
 	},
 
 	{
@@ -52,11 +52,22 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 		default: 'mistral-ocr-latest',
 		options: [
 			{
-				name: 'Mistral OCR Latest',
+				name: 'Mistral OCR Latest (25.05) - Recommended',
 				value: 'mistral-ocr-latest',
+				description: 'Latest version with 99%+ accuracy, 2000 pages/min, multilingual support',
+			},
+			{
+				name: 'Mistral OCR 25.05 (Specific)',
+				value: 'mistral-ocr-2505',
+				description: 'May 2025 version - State-of-the-art OCR with enhanced multilingual capabilities',
+			},
+			{
+				name: 'Mistral OCR 25.03 (Legacy)',
+				value: 'mistral-ocr-2503',
+				description: 'March 2025 version - For compatibility with older workflows',
 			},
 		],
-		description: 'The Mistral OCR model to use',
+		description: 'Choose Mistral OCR model version. Latest (25.05) offers best performance with 94.89% accuracy benchmark',
 	},
 
 	// Document Template Selection
