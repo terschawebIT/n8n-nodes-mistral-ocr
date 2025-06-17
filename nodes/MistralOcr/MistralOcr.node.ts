@@ -148,21 +148,21 @@ export class MistralOcr implements INodeType {
 				if (mimeType === 'text/plain' && fileName) {
 					const extension = fileName.toLowerCase().split('.').pop();
 					const mimeTypeMappings: { [key: string]: string } = {
-						'pdf': 'application/pdf',
-						'png': 'image/png',
-						'jpg': 'image/jpeg',
-						'jpeg': 'image/jpeg',
-						'gif': 'image/gif',
-						'webp': 'image/webp',
-						'tiff': 'image/tiff',
-						'tif': 'image/tiff',
-						'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-						'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-						'epub': 'application/epub+zip',
-						'rtf': 'application/rtf',
-						'odt': 'application/vnd.oasis.opendocument.text',
-						'tex': 'application/x-latex',
-						'ipynb': 'application/x-ipynb+json',
+						pdf: 'application/pdf',
+						png: 'image/png',
+						jpg: 'image/jpeg',
+						jpeg: 'image/jpeg',
+						gif: 'image/gif',
+						webp: 'image/webp',
+						tiff: 'image/tiff',
+						tif: 'image/tiff',
+						docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+						pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+						epub: 'application/epub+zip',
+						rtf: 'application/rtf',
+						odt: 'application/vnd.oasis.opendocument.text',
+						tex: 'application/x-latex',
+						ipynb: 'application/x-ipynb+json',
 					};
 
 					if (extension && mimeTypeMappings[extension]) {
