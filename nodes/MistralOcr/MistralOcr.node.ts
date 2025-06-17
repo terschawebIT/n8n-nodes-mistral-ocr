@@ -203,11 +203,23 @@ export class MistralOcr implements INodeType {
 					);
 				}
 
+				// Debug logging to track what we're sending
+				console.log(`🔍 Debug - File Info:`, {
+					fileName,
+					originalMimeType: binaryData.mimeType,
+					correctedMimeType: mimeType,
+					fileSize: fileBuffer.length,
+					extension: fileName.toLowerCase().split('.').pop()
+				});
+
 				formData.append('file', fileBuffer, {
 					filename: fileName,
 					contentType: mimeType,
 					knownLength: fileBuffer.length,
 				});
+
+				// Log FormData headers for debugging
+				console.log(`🔍 Debug - FormData Headers:`, formData.getHeaders());
 
 				const uploadResponse = await makeRequestWithRetry({
 					method: 'POST',
