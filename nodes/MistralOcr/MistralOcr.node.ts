@@ -140,7 +140,36 @@ export class MistralOcr implements INodeType {
 				// Ensure proper content type and filename handling
 				const fileBuffer = Buffer.from(binaryData.data, 'base64');
 				const fileName = binaryData.fileName || 'document';
-				const mimeType = binaryData.mimeType || 'application/pdf';
+
+				// Fix MIME type detection based on file extension if mimeType is incorrect
+				let mimeType = binaryData.mimeType || 'application/pdf';
+
+				// Override text/plain for known file types based on extension
+				if (mimeType === 'text/plain' && fileName) {
+					const extension = fileName.toLowerCase().split('.').pop();
+					const mimeTypeMappings: { [key: string]: string } = {
+						'pdf': 'application/pdf',
+						'png': 'image/png',
+						'jpg': 'image/jpeg',
+						'jpeg': 'image/jpeg',
+						'gif': 'image/gif',
+						'webp': 'image/webp',
+						'tiff': 'image/tiff',
+						'tif': 'image/tiff',
+						'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+						'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+						'epub': 'application/epub+zip',
+						'rtf': 'application/rtf',
+						'odt': 'application/vnd.oasis.opendocument.text',
+						'tex': 'application/x-latex',
+						'ipynb': 'application/x-ipynb+json',
+					};
+
+					if (extension && mimeTypeMappings[extension]) {
+						mimeType = mimeTypeMappings[extension];
+						console.log(`🔧 Fixed MIME type for ${fileName}: ${binaryData.mimeType} → ${mimeType}`);
+					}
+				}
 
 				// Validate that we have a supported MIME type
 				const supportedMimeTypes = [

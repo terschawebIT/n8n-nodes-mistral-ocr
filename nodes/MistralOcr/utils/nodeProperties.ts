@@ -59,7 +59,8 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 			{
 				name: 'Mistral OCR 25.05 (Specific)',
 				value: 'mistral-ocr-2505',
-				description: 'May 2025 version - State-of-the-art OCR with enhanced multilingual capabilities',
+				description:
+					'May 2025 version - State-of-the-art OCR with enhanced multilingual capabilities',
 			},
 			{
 				name: 'Mistral OCR 25.03 (Legacy)',
@@ -67,7 +68,8 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 				description: 'March 2025 version - For compatibility with older workflows',
 			},
 		],
-		description: 'Choose Mistral OCR model version. Latest (25.05) offers best performance with 94.89% accuracy benchmark',
+		description:
+			'Choose Mistral OCR model version. Latest (25.05) offers best performance with 94.89% accuracy benchmark',
 	},
 
 	// Document Template Selection
