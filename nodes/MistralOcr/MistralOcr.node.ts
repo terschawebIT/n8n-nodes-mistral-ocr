@@ -204,13 +204,31 @@ export class MistralOcr implements INodeType {
 				}
 
 				// Debug logging to track what we're sending
-				console.log(`🔍 Debug - File Info:`, {
+				console.log('🔍 Debug - Binary Data:', {
+					hasData: !!binaryData.data,
+					dataLength: binaryData.data?.length || 0,
+					dataType: typeof binaryData.data,
+					dataStart: binaryData.data?.substring(0, 50) + '...',
+					fileExtension: binaryData.fileExtension,
+					fileSizeFromHeader: binaryData.fileSize,
+				});
+
+				console.log('🔍 Debug - File Info:', {
 					fileName,
 					originalMimeType: binaryData.mimeType,
 					correctedMimeType: mimeType,
 					fileSize: fileBuffer.length,
-					extension: fileName.toLowerCase().split('.').pop()
+					extension: fileName.toLowerCase().split('.').pop(),
 				});
+
+				// Validate binary data is not empty or corrupted
+				if (!binaryData.data || binaryData.data.length < 10) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Binary data is empty or corrupted. Expected a valid file but got ${binaryData.data?.length || 0} characters of data.`,
+						{ itemIndex: i },
+					);
+				}
 
 				formData.append('file', fileBuffer, {
 					filename: fileName,
@@ -219,7 +237,7 @@ export class MistralOcr implements INodeType {
 				});
 
 				// Log FormData headers for debugging
-				console.log(`🔍 Debug - FormData Headers:`, formData.getHeaders());
+				console.log('🔍 Debug - FormData Headers:', formData.getHeaders());
 
 				const uploadResponse = await makeRequestWithRetry({
 					method: 'POST',
