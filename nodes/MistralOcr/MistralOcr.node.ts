@@ -137,9 +137,19 @@ export class MistralOcr implements INodeType {
 				const formData = new FormData();
 				formData.append('purpose', 'ocr');
 
-				// Ensure proper content type and filename handling
-				const fileBuffer = Buffer.from(binaryData.data, 'base64');
-				const fileName = binaryData.fileName || 'document';
+						// Handle both direct base64 data and filesystem references
+		let fileBuffer: Buffer;
+		const fileName = binaryData.fileName || 'document';
+
+		// Check if this is a filesystem reference (n8n binary data mode)
+		if (binaryData.data && binaryData.data.startsWith('filesystem-')) {
+			// This is a filesystem reference, need to get the actual binary data
+			const binaryDataBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+			fileBuffer = binaryDataBuffer;
+		} else {
+			// This is direct base64 data
+			fileBuffer = Buffer.from(binaryData.data, 'base64');
+		}
 
 				// Fix MIME type detection based on file extension if mimeType is incorrect
 				let mimeType = binaryData.mimeType || 'application/pdf';
@@ -208,7 +218,7 @@ export class MistralOcr implements INodeType {
 					hasData: !!binaryData.data,
 					dataLength: binaryData.data?.length || 0,
 					dataType: typeof binaryData.data,
-					dataStart: binaryData.data?.substring(0, 50) + '...',
+					dataStart: `${binaryData.data?.substring(0, 50)}...`,
 					fileExtension: binaryData.fileExtension,
 					fileSizeFromHeader: binaryData.fileSize,
 				});
