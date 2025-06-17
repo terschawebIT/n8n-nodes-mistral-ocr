@@ -31,8 +31,16 @@ export const NODE_PROPERTIES: INodeProperties[] = [
 		type: 'string',
 		default: 'data',
 		required: true,
-		description: 'Name of the binary property containing the document to process',
+		description: 'Name of the binary property containing the document to process. Supported formats: PDF, Images (PNG/JPEG/GIF), Word (.docx), PowerPoint (.pptx), RTF, EPUB, LaTeX, Jupyter Notebooks (.ipynb)',
 		placeholder: 'data',
+	},
+
+	{
+		displayName: '📄 Supported File Formats',
+		name: 'supportedFormatsNotice',
+		type: 'notice',
+		default: '',
+		description: '✅ PDF, Images (PNG/JPEG/GIF/etc.), Word (.docx), PowerPoint (.pptx), RTF, EPUB, LaTeX (.tex), Jupyter Notebooks (.ipynb), DokuWiki, BibTeX, Troff<br/>❌ Plain text files (.txt), CSV, JSON, XML are NOT supported. Convert them to PDF or image format first.',
 	},
 
 	{
