@@ -137,7 +137,7 @@ export class MistralOcr implements INodeType {
 				const formData = new FormData();
 				formData.append('purpose', 'ocr');
 
-								// Ensure proper content type and filename handling
+				// Ensure proper content type and filename handling
 				const fileBuffer = Buffer.from(binaryData.data, 'base64');
 				const fileName = binaryData.fileName || 'document';
 				const mimeType = binaryData.mimeType || 'application/pdf';
@@ -145,14 +145,28 @@ export class MistralOcr implements INodeType {
 				// Validate that we have a supported MIME type
 				const supportedMimeTypes = [
 					'application/pdf',
-					'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/tiff',
+					'image/png',
+					'image/jpeg',
+					'image/jpg',
+					'image/gif',
+					'image/webp',
+					'image/tiff',
 					'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 					'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-					'application/epub+zip', 'application/rtf', 'application/vnd.oasis.opendocument.text',
-					'application/x-latex', 'application/x-ipynb+json', 'text/troff', 'text/x-dokuwiki'
+					'application/epub+zip',
+					'application/rtf',
+					'application/vnd.oasis.opendocument.text',
+					'application/x-latex',
+					'application/x-ipynb+json',
+					'text/troff',
+					'text/x-dokuwiki',
 				];
 
-				if (!supportedMimeTypes.some(supported => mimeType.startsWith(supported.split('/')[0]) || mimeType === supported)) {
+				if (
+					!supportedMimeTypes.some(
+						(supported) => mimeType.startsWith(supported.split('/')[0]) || mimeType === supported,
+					)
+				) {
 					throw new NodeOperationError(
 						this.getNode(),
 						`Unsupported file format: ${mimeType}. File appears to be detected as "${binaryData.mimeType}". Supported formats: PDF, Images, Word, PowerPoint, RTF, EPUB, LaTeX, Jupyter Notebooks.`,
